@@ -7,6 +7,7 @@ import { notify } from "@/utils/toastify";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
 import { CartContext } from "@/contexts/CartContext";
+
 const Header = () => {
   const { user, setUser, logout } = useContext(AuthContext);
   const { isScanning, setIsScanning } = useContext(CartContext);
@@ -49,7 +50,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex items-center justify-end gap-5 text-orange-500">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center ml-2">
             <button
               onClick={handleToggleChange}
               onKeyDown={(event) => event.preventDefault()}
@@ -85,7 +86,7 @@ const Header = () => {
                 alt="profile"
               />
             </div>
-            <div className="w-full">
+            <div className="w-full hidden md:block">
               <span className="text-white font-bold">User: </span>
               {user?.name}
             </div>

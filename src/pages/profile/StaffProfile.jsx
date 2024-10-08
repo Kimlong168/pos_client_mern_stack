@@ -4,12 +4,14 @@ import { useContext, useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import isSameDate from "@/utils/isSameDate";
+import { MdOutlineArrowBackIos, MdOutlineCheckCircle } from "react-icons/md";
 import {
   useCheckInAttendance,
   useCheckOutAttendance,
 } from "@/hooks/attendance/useAttendance";
 import { notify } from "@/utils/toastify";
 import { getFormattedTimeWithAMPM } from "@/utils/getFormattedDate";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 const WORK_START_TIME = new Date().setHours(9, 0, 0); // 9:00 AM
 const WORK_END_TIME = new Date().setHours(17, 0, 0); // 5:00 PM
 
@@ -25,6 +27,7 @@ const StaffProfile = () => {
   };
   const attValue = getQueryParam("att");
   const attendances = JSON.parse(localStorage.getItem("attendances"));
+  const [showModal, setShowModal] = useState(false);
   const [scannerResult, setScannerResult] = useState(attValue || null);
 
   const isCheckIn = attendances
@@ -68,6 +71,7 @@ const StaffProfile = () => {
   // handle check in
   const handleCheckIn = async (event) => {
     event.preventDefault();
+
     let latitude = 0;
     let longitude = 0;
     if (navigator.geolocation) {
@@ -154,7 +158,7 @@ const StaffProfile = () => {
   // handle check out
   const handleCheckOut = async (event) => {
     event.preventDefault();
-
+    setShowModal(false);
     let latitude = 0;
     let longitude = 0;
     if (navigator.geolocation) {
@@ -251,7 +255,7 @@ const StaffProfile = () => {
     <div
       className={`flex justify-center items-center relative h-screen bg-black/70`}
     >
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md relative m-2">
         <h2 className="text-2xl font-bold mb-4 text-center">Profile</h2>
         <div>
           <img
@@ -288,8 +292,8 @@ const StaffProfile = () => {
             />
           </div>
           <Link to="/">
-            <button className="mt-4 text-white w-full px-3 py-2 bg-orange-500 hover:bg-orange-600 border border-gray-300 rounded-md">
-              Go to Home Page
+            <button className="mt-4 flex items-center gap-2 text-white w-fit px-2 py-2 bg-red-500 hover:bg-orange-600 border border-gray-300 rounded-xl top-0 left-4 absolute">
+              <MdOutlineArrowBackIos />
             </button>
           </Link>
           {isCheckIn ? (
@@ -321,12 +325,20 @@ const StaffProfile = () => {
                           : ""
                       })`
                     ) : (
-                      <span
-                        onClick={handleCheckOut}
-                        className="text-blue-400 underline cursor-pointer hover:text-blue-600"
+                      <button
+                        disabled={checkOut.isLoading}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowModal(true);
+                        }}
+                        className={`text-blue-400 ${
+                          !checkOut.isLoading && "underline"
+                        } cursor-pointer hover:text-blue-600`}
                       >
-                        Check out now?
-                      </span>
+                        {checkOut.isLoading
+                          ? "Checking Out..."
+                          : "Check Out Now?"}
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -335,22 +347,32 @@ const StaffProfile = () => {
           ) : scannerResult ? (
             <div>
               <button
-                className="mt-4 text-white w-full px-3 py-2 bg-green-500 hover:bg-green-600 border border-gray-300 rounded-md"
+                disabled={checkIn.isLoading}
+                className="mt-3 text-white w-full px-3 py-3 bg-green-500 hover:bg-green-600 border border-gray-300 rounded-md flex items-center justify-center gap-2"
                 onClick={handleCheckIn}
               >
-                Check In Now
+                {checkIn.isLoading ? "Checking In..." : "Check In Now"}{" "}
+                <MdOutlineCheckCircle />
               </button>
             </div>
           ) : (
             <div>
-              <h3 className="text-center font-semibold">
-                Scan Qrcode to record attendance
+              <h3 className="text-center font-semibold mb-1">
+                Scan Qrcode to Record Attendance
               </h3>
               <div id="reader" className="w-full max-h-[350px]"></div>
             </div>
           )}
         </form>
       </div>
+
+      <ConfirmModal
+        show={showModal}
+        setShow={setShowModal}
+        title="Check Out"
+        message="Are you sure you want to check out now?"
+        onConfirm={handleCheckOut}
+      />
     </div>
   );
 };

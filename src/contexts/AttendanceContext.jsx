@@ -12,14 +12,14 @@ const attendanceReducer = (state, action) => {
         ...state,
         attendances: action.payload,
       };
-    case "DELETESET_ATTENDANCE":
+    case "DELETE_ATTENDANCE":
       return {
         ...state,
         attendances: state.attendances.filter(
           (attendance) => attendance._id !== action.payload
         ),
       };
-    case "SEARCHSET_ATTENDANCE":
+    case "SEARCH_ATTENDANCE":
       return {
         ...state,
         attendances: action.payload,
@@ -40,7 +40,7 @@ export const AttendanceProvider = ({ children }) => {
   };
 
   const removeAttendance = (payload) => {
-    dispatch({ type: "DELETESET_ATTENDANCE", payload });
+    dispatch({ type: "DELETE_ATTENDANCE", payload });
   };
 
   const searchAttendance = (payload) => {
@@ -52,10 +52,11 @@ export const AttendanceProvider = ({ children }) => {
         attendance._id.toLowerCase().includes(payload.toLowerCase()) ||
         attendance.qr_code?.location
           .toLowerCase()
-          .includes(payload.toLowerCase())
+          .includes(payload.toLowerCase()) ||
+        attendance.employee?.name.toLowerCase().includes(payload.toLowerCase())
     );
 
-    dispatch({ type: "SEARCHSET_ATTENDANCE", payload: filteredattendances });
+    dispatch({ type: "SEARCH_ATTENDANCE", payload: filteredattendances });
 
     if (payload === "") {
       setItems(state.attendances);
