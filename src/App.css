@@ -1,0 +1,4 @@
+/* style the ckeditor component */
+.ck-editor__editable {
+    min-height: 150px;
+}
