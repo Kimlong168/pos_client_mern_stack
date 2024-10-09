@@ -29,7 +29,7 @@ const StaffProfile = () => {
   const attendances = JSON.parse(localStorage.getItem("attendances"));
   const [showModal, setShowModal] = useState(false);
   const [scannerResult, setScannerResult] = useState(attValue || null);
-
+  // const [currentTime, setCurrentTime] = useState(new Date());
   const isCheckIn = attendances
     ? attendances.find(
         (att) =>
@@ -346,6 +346,13 @@ const StaffProfile = () => {
             </div>
           ) : scannerResult ? (
             <div>
+              <h3 className="text-center font-semibold mb-1">
+                You are about to check in
+              </h3>
+              <div className="flex justify-center items-center">
+                Current Time: {new Date().toLocaleTimeString()}
+              </div>
+
               <button
                 disabled={checkIn.isLoading}
                 className="mt-3 text-white w-full px-3 py-3 bg-green-500 hover:bg-green-600 border border-gray-300 rounded-md flex items-center justify-center gap-2"
