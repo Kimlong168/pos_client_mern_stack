@@ -4,9 +4,9 @@ import QRCode from "react-qr-code";
 import { MdCloudDownload } from "react-icons/md";
 import downloadQrcode from "@/utils/downloadQrcode";
 
-const url =
-  import.meta.env.REACT_APP_BASE_URL ||
-  "http://localhost:5173/user/profile?att=";
+const url = import.meta.env.REACT_APP_BASE_URL
+  ? import.meta.env.REACT_APP_BASE_URL + "/user/profile?att="
+  : "http://localhost:5173/user/profile?att=";
 export const renderRows = (item, index, handleDelete) => {
   return (
     <>
