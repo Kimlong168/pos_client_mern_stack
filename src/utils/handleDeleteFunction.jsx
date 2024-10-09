@@ -1,6 +1,6 @@
 import { closeSnackbar, enqueueSnackbar } from "notistack";
 
-const handleDeleteFunction = async (deleteFn) => {
+const handleDeleteFunction = async (deleteFn, message) => {
   const action = (snackbarId) => (
     <div className="flex gap-4 p-5">
       <button
@@ -23,7 +23,7 @@ const handleDeleteFunction = async (deleteFn) => {
     </div>
   );
 
-  enqueueSnackbar("Are you sure to delete?", {
+  enqueueSnackbar(message || "Are you sure to delete?", {
     variant: "warning",
     action,
     anchorOrigin: {

@@ -46,14 +46,13 @@ export const AttendanceProvider = ({ children }) => {
   const searchAttendance = (payload) => {
     const filteredattendances = state.attendances.filter(
       (attendance) =>
-        attendance.emoloyee?.name
+        attendance.employee?.name
           .toLowerCase()
           .includes(payload.toLowerCase()) ||
         attendance._id.toLowerCase().includes(payload.toLowerCase()) ||
         attendance.qr_code?.location
           .toLowerCase()
-          .includes(payload.toLowerCase()) ||
-        attendance.employee?.name.toLowerCase().includes(payload.toLowerCase())
+          .includes(payload.toLowerCase())
     );
 
     dispatch({ type: "SEARCH_ATTENDANCE", payload: filteredattendances });

@@ -11,6 +11,7 @@ import SearchBar from "../../components/form/SearchBar";
 import { notify } from "../../utils/toastify";
 import { handleDeleteFunction } from "../../utils/handleDeleteFunction";
 import {
+  useClearAllInventories,
   useDeleteInventory,
   useInventories,
 } from "../../hooks/inventory/useInventory";
@@ -26,6 +27,7 @@ const Inventory = () => {
   const { data: users, isLoading: isUserLoading } = useUsers();
   const { data: products, isLoading: isProductLoading } = useProducts();
   const deleteInventory = useDeleteInventory();
+  const clearAllInventories = useClearAllInventories();
 
   const {
     state: inventories,
@@ -171,6 +173,26 @@ const Inventory = () => {
         notify("Delete fail!", "error");
       }
     });
+  };
+
+  const handleClearAll = async () => {
+    handleDeleteFunction(async () => {
+      try {
+        const result = await clearAllInventories.mutateAsync();
+
+        if (result.status === "success") {
+          notify("Clear all inventories successfully", "success");
+          dispatch({ type: "SET_INVENTORY", payload: [] });
+        } else {
+          notify(result.error.message, "error");
+
+          console.error("Error deleting item:", result.error.message);
+        }
+      } catch (error) {
+        console.error("Error deleting item:", error);
+        notify("Clear all fail!", "error");
+      }
+    }, "Are you sure you want to clear all inventories? Once deleted, you will not be able to recover this data!");
   };
 
   const dataToExport = inventories?.map((item, index) => ({
@@ -338,6 +360,16 @@ const Inventory = () => {
                 data={dataToExport}
                 fileName={`Purchase Orders - ${new Date().toLocaleDateString()}`}
               />
+            </div>
+          </div>
+
+          <div>
+            <label>Clear all inventories from database</label>
+            <div
+              onClick={handleClearAll}
+              className="w-fit cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+            >
+              Clear all Inventories Now ☢️
             </div>
           </div>
         </div>

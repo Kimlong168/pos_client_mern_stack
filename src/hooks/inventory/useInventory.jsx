@@ -104,3 +104,18 @@ export const useDeleteInventory = () => {
     }
   );
 };
+
+export const useClearAllInventories = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    async () => {
+      const response = await axiosClient.delete(`/inventories/clear-all`);
+      return response.data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("inventories");
+      },
+    }
+  );
+};

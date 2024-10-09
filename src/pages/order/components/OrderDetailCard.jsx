@@ -79,7 +79,7 @@ const OrderDetailCard = ({
                 Cashier
               </label>
 
-              <p className="font-medium">{user.name}</p>
+              <p className="font-medium">{user?.name || "No Data"}</p>
             </div>
           </div>
           <div className="grid gap-4">

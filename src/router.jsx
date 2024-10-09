@@ -47,6 +47,8 @@ import CreateQrCode from "./pages/qrcode/CreateQrCode";
 import UpdateQrCode from "./pages/qrcode/UpdateQrCode";
 
 import Attendance from "./pages/attendance";
+import LeaveRequest from "./pages/leaveRequest";
+import AdminApprovedOrRejected from "./pages/leaveRequest/AdminApprovedOrRejected";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -189,6 +191,14 @@ const router = createBrowserRouter([
       {
         path: "/attendance",
         element: <Attendance />,
+      },
+      {
+        path: "/leaveRequest",
+        element: <LeaveRequest />,
+      },
+      {
+        path: "/leaveRequest/approve/:id",
+        element: <AdminApprovedOrRejected />,
       },
     ],
   },

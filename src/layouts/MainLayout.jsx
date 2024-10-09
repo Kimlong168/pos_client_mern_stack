@@ -9,7 +9,7 @@ import { assets } from "../assets/assets";
 import { Outlet } from "react-router-dom";
 import ConfirmModal from "../components/ui/ConfirmModal";
 import { notify } from "../utils/toastify";
-
+import { VscGitPullRequestGoToChanges } from "react-icons/vsc";
 import { TbCategory2, TbLogout2, TbReport } from "react-icons/tb";
 import { FaRegUser } from "react-icons/fa6";
 import { PiFactory } from "react-icons/pi";
@@ -167,6 +167,11 @@ const AdminLayout = () => {
       tabName: "Attendance",
       icon: <LuClipboardList />,
       pathName: "/attendance",
+    },
+    {
+      tabName: "Leave Reqest",
+      icon: <VscGitPullRequestGoToChanges />,
+      pathName: "/leaveRequest",
     },
   ];
 

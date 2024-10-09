@@ -5,6 +5,8 @@ import { FaRegUser } from "react-icons/fa6";
 import { PiFactory } from "react-icons/pi";
 import { MdOutlineInventory2 } from "react-icons/md";
 import { BiPurchaseTag } from "react-icons/bi";
+import { VscGitPullRequestGoToChanges } from "react-icons/vsc";
+
 import {
   IoCartOutline,
   IoFastFoodOutline,
@@ -108,6 +110,13 @@ const CardGroup = ({ itemNumber }) => {
           subtitle="View attendance"
           href="/attendance"
           Icon={LuClipboardList}
+          numberOfItem={itemNumber?.mail}
+        />
+        <Card
+          title="Leave Request"
+          subtitle="Approve or Reject leave request"
+          href="/leaveRequest"
+          Icon={VscGitPullRequestGoToChanges}
           numberOfItem={itemNumber?.mail}
         />
       </div>

@@ -4,75 +4,63 @@ import Table from "../../components/table/Table";
 import TableBody from "../../components/table/TableBody";
 import TableHeader from "../../components/table/TableHeader";
 import LoadingInTable from "../../components/ui/LoadingInTable";
-import {
-  getFormattedDate,
-  getFormattedTimeWithAMPM,
-} from "@/utils/getFormattedDate";
+
 import { renderRows } from "./components/DataRow";
 import PageTitle from "../../components/ui/PageTitle";
 import SelectNumberPerPage from "../../components/form/SelectNumberPerPage";
 import SearchBar from "../../components/form/SearchBar";
-import { notify } from "../../utils/toastify";
-import { handleDeleteFunction } from "../../utils/handleDeleteFunction";
-import {
-  useAttendances,
-  useDeleteAttendance,
-} from "@/hooks/attendance/useAttendance";
-import { AttendanceContext } from "@/contexts/AttendanceContext";
+
+import { LeaveRequestContext } from "@/contexts/LeaveRequestContext";
+import { useLeaveRequests } from "@/hooks/leaveRequest/useLeaveRequest";
 import ExportToExcel from "@/components/table/ExportToExcel";
 import ExportToPDF from "@/components/table/ExportToPDF";
 import SelectFilter from "@/components/form/SelectFilter";
+import { getFormattedDate } from "@/utils/getFormattedDate";
 import { useUsers } from "@/hooks/user/useUser";
-
-const Attendance = () => {
-  const { data, isLoading } = useAttendances();
+import { handleDeleteFunction } from "@/utils/handleDeleteFunction";
+import { notify } from "@/utils/toastify";
+import { useClearAllLeaveRequests } from "@/hooks/leaveRequest/useLeaveRequest";
+import { useNavigate } from "react-router-dom";
+const LeaveRequest = () => {
+  const { data, isLoading } = useLeaveRequests();
   const { data: users, isLoading: isUserLoading } = useUsers();
-  const deleteAttendance = useDeleteAttendance();
-
+  const clearAllLeaveRequests = useClearAllLeaveRequests();
   const {
-    state: attendances,
+    state: leaveRequests,
     dispatch,
-    removeAttendance,
-    searchAttendance,
-  } = useContext(AttendanceContext);
+    searchLeaveRequest,
+  } = useContext(LeaveRequestContext);
 
   const [searchKeyWord, setSearchKeyWord] = useState("");
   const [numberOfRecordsPerPage, setNumberOfRecordsPerPage] = useState(
     sessionStorage.getItem("numberOfRecordsPerPage") || 5
   );
+  const navigate = useNavigate();
 
+  //  order history list
   useEffect(() => {
     if (data) {
-      dispatch({ type: "SET_ATTENDANCE", payload: data });
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: data });
     }
   }, [data, dispatch]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchKeyWord.trim() === "") {
-      dispatch({ type: "SET_ATTENDANCE", payload: data });
-    } else {
-      searchAttendance(searchKeyWord);
-    }
-  };
-
   const handleFilterByEmployee = (employee) => {
     if (employee === "all") {
-      dispatch({ type: "SET_ATTENDANCE", payload: data });
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: data });
     } else {
       const filteredData = data.filter(
         (item) => item.employee?._id === employee
       );
-      dispatch({ type: "SET_ATTENDANCE", payload: filteredData });
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: filteredData });
     }
   };
 
   const handleFilterByDate = (date) => {
     if (date === "all") {
-      dispatch({ type: "SET_ATTENDANCE", payload: data });
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: data });
     } else {
       const filteredData = data.filter((item) => {
-        const recordDate = new Date(item.date);
+        const requestDate = new Date(item.created_at);
         const today = new Date();
 
         // Calculate relevant date ranges
@@ -112,93 +100,101 @@ const Attendance = () => {
 
         // Filtering based on the date parameter
         if (date === "today") {
-          return recordDate.toDateString() === today.toDateString();
+          return requestDate.toDateString() === today.toDateString();
         } else if (date === "yesterday") {
-          return recordDate.toDateString() === yesterday.toDateString();
+          return requestDate.toDateString() === yesterday.toDateString();
         } else if (date === "this_week") {
-          return recordDate >= startOfWeek && recordDate <= endOfWeek;
+          return requestDate >= startOfWeek && requestDate <= endOfWeek;
         } else if (date === "last_week") {
-          return recordDate >= startOfLastWeek && recordDate < startOfWeek;
+          return requestDate >= startOfLastWeek && requestDate < startOfWeek;
         } else if (date === "this_month") {
-          return recordDate >= startOfMonth && recordDate <= endOfMonth;
+          return requestDate >= startOfMonth && requestDate <= endOfMonth;
         } else if (date === "last_month") {
-          return recordDate >= startOfLastMonth && recordDate <= endOfLastMonth;
+          return (
+            requestDate >= startOfLastMonth && requestDate <= endOfLastMonth
+          );
         } else if (date === "this_year") {
-          return recordDate >= startOfYear && recordDate <= endOfYear;
+          return requestDate >= startOfYear && requestDate <= endOfYear;
         } else {
           // Last 6 months
-          return recordDate >= startOfLast6Months && recordDate <= today;
+          return requestDate >= startOfLast6Months && requestDate <= today;
         }
       });
 
-      dispatch({ type: "SET_ATTENDANCE", payload: filteredData });
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: filteredData });
     }
   };
 
   const handleFilterByStatus = (status) => {
     if (status === "all") {
-      dispatch({ type: "SET_ATTENDANCE", payload: data });
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: data });
     } else {
-      const filteredData = data.filter(
-        (item) =>
-          item.check_in_status === status || item.check_out_status === status
-      );
-      dispatch({ type: "SET_ATTENDANCE", payload: filteredData });
+      const filteredData = data.filter((item) => item.status === status);
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: filteredData });
     }
   };
 
-  // handle delete
-  const handleDelete = async (id) => {
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchKeyWord.trim() === "") {
+      dispatch({ type: "SET_LEAVE_REQUEST", payload: data });
+    } else {
+      searchLeaveRequest(searchKeyWord);
+    }
+  };
+
+  const handleClearAll = async () => {
     handleDeleteFunction(async () => {
       try {
-        const result = await deleteAttendance.mutateAsync(id);
+        const result = await clearAllLeaveRequests.mutateAsync();
 
         if (result.status === "success") {
-          notify("Delete successfully", "success");
-          removeAttendance(id);
+          notify("Clear all leave requests successfully", "success");
+          navigate("/leaveRequest");
         } else {
-          notify("Delete fail!", "error");
+          notify("result.error.message", "error");
+
+          console.error("Error deleting item:", result.error.message);
         }
       } catch (error) {
         console.error("Error deleting item:", error);
-        notify("Delete fail!", "error");
+        notify("Clear all fail!", "error");
       }
-    });
+    }, "Are you sure you want to clear all leave requests? Once deleted, you will not be able to recover this data!");
   };
 
-  const dataToExport = attendances.map((att, index) => {
+  const dataToExport = leaveRequests.map((item, index) => {
     return {
       No: index + 1,
-      ID: att._id,
-      Employee: att.employee?.name,
-      "Time In":
-        getFormattedTimeWithAMPM(att.time_in) +
-        " (" +
-        att.check_in_status +
-        ")",
-      "Late Time": att.checkInLateDuration,
-      "Time Out":
-        getFormattedTimeWithAMPM(att.time_out) +
-        " (" +
-        att.check_out_status +
-        ")",
-      "Early Time": att.checkOutEarlyDuration,
-      Date: getFormattedDate(att.date),
-      Location: att.qr_code?.location,
+      Employee: item.employee?.name + `(${item.employee?.role})`,
+      Type: item.type,
+      Status: item.status,
+      "Leave Date": `${getFormattedDate(item.start_date)} - ${getFormattedDate(
+        item.end_date
+      )}`,
+      Reason: item.reason,
+      "Approved By": item.approvedOrRejectedBy
+        ? item.approvedOrRejectedBy?.name +
+          `(${item.approvedOrRejectedBy?.role})`
+        : "Not Yet",
+      "Request Date": getFormattedDate(item.created_at),
     };
   });
 
   return (
     <div>
       {/* page title */}
-      <PageTitle title={`Attendances (${attendances?.length || 0})`} link="#" />
+      <PageTitle
+        title={`Leave Requests (${leaveRequests?.length || 0})`}
+        link="#"
+      />
 
       {/* search and filter */}
       <div className="flex flex-col md:flex-row items-center gap-5 py-5 ">
         <SelectNumberPerPage
           setNumberOfRecordsPerPage={setNumberOfRecordsPerPage}
           numberOfRecordsPerPage={numberOfRecordsPerPage}
-          maxLength={attendances?.length}
+          maxLength={leaveRequests?.length}
         />
 
         <SearchBar
@@ -207,7 +203,6 @@ const Attendance = () => {
           searchKeyWord={searchKeyWord}
         />
       </div>
-
       <div className="flex flex-row gap-3 items-center w-full mb-5">
         <div>
           <label>
@@ -222,35 +217,41 @@ const Attendance = () => {
                 label: "All",
               },
               {
-                value: "On Time",
-                label: "On Time",
+                value: "Approved",
+                label: "Approved",
               },
               {
-                value: "Late",
-                label: "Late",
+                value: "Rejected",
+                label: "Rejected",
               },
               {
-                value: "Checked Out",
-                label: "Checked Out",
-              },
-              {
-                value: "Early Check-out",
-                label: "Early Check-out",
-              },
-              {
-                value: "Absent",
-                label: "Absent",
-              },
-              {
-                value: "Missed Check-out",
-                label: "Missed Check-out",
-              },
-              {
-                value: "On Leave",
-                label: "On Leave",
+                value: "Pending",
+                label: "Pending",
               },
             ]}
           />
+        </div>
+        <div>
+          <label>
+            <span className="text-gray-700">Number of Status</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="bg-orange-500/20 border-orange-500 text-orange-500 px-2  rounded w-[120px] text-center border p-2">
+              Pending:{" "}
+              {leaveRequests.filter((item) => item.status === "Pending")
+                .length || "0"}
+            </div>
+            <div className="bg-green-600/20 border-green-600 text-green-600 px-2  rounded w-[120px] text-center border p-2">
+              Approved:{" "}
+              {leaveRequests.filter((item) => item.status === "Approved")
+                .length || "0"}
+            </div>
+            <div className="bg-red-500/20 border-red-500 text-red-500 px-2  rounded w-[120px] text-center border p-2">
+              Rejected:{" "}
+              {leaveRequests.filter((item) => item.status === "Rejected")
+                .length || "0"}
+            </div>
+          </div>
         </div>
         {!isUserLoading && (
           <div>
@@ -279,7 +280,7 @@ const Attendance = () => {
         )}
         <div>
           <label>
-            <span className="text-gray-700">Date</span>
+            <span className="text-gray-700">Request Date</span>
           </label>
           <SelectFilter
             handleFilter={handleFilterByDate}
@@ -322,12 +323,22 @@ const Attendance = () => {
           <div className="flex gap-2 w-full">
             <ExportToExcel
               data={dataToExport}
-              fileName={`Attendance_${new Date().toLocaleDateString()}`}
+              fileName={`Leave-request${new Date().toLocaleDateString()}`}
             />
             <ExportToPDF
               data={dataToExport}
-              fileName={`Attendance_${new Date().toLocaleDateString()}`}
+              fileName={`Leave-request ${new Date().toLocaleDateString()}`}
             />
+          </div>
+        </div>
+
+        <div>
+          <label>Clear all (expired only)</label>
+          <div
+            onClick={handleClearAll}
+            className="w-fit cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded text-white"
+          >
+            Clear all Now☢️
           </div>
         </div>
       </div>
@@ -338,35 +349,36 @@ const Attendance = () => {
           theads={[
             "No",
             "Employee",
-            "Time In",
-            "Time Out",
-            "Date",
-            "Location",
-            "Action",
+            "Type",
+            "Status",
+            "Leave Date",
+            "Reason",
+            "Approved By",
+            "Request Date",
+            "Comment",
           ]}
         />
         <TableBody>
           {/* loading */}
           {isLoading ? (
-            <LoadingInTable colSpan={6} />
+            <LoadingInTable colSpan={8} />
           ) : (
             <>
-              {attendances?.length == 0 ? (
+              {leaveRequests?.length == 0 ? (
                 <tr>
                   <td
                     className="py-10 dark:text-white text-orange-500 text-center"
-                    colSpan={6}
+                    colSpan={8}
                   >
                     No data
                   </td>
                 </tr>
               ) : (
                 <Pagination
-                  data={attendances}
-                  deleteItemFn={handleDelete}
+                  data={leaveRequests}
                   numberOfRecordsPerPage={numberOfRecordsPerPage}
                   renderRow={renderRows}
-                  columns={6}
+                  columns={8}
                 />
               )}
             </>
@@ -377,4 +389,4 @@ const Attendance = () => {
   );
 };
 
-export default Attendance;
+export default LeaveRequest;

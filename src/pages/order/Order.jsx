@@ -365,11 +365,11 @@ const Order = () => {
             <div className="flex gap-2 w-full">
               <ExportToExcel
                 data={dataToExport}
-                fileName={`Order - ${new Date().toLocaleDateString()}`}
+                fileName={`Order_${new Date().toLocaleDateString()}`}
               />
               <ExportToPDF
                 data={dataToExport}
-                fileName={`Order - ${new Date().toLocaleDateString()}`}
+                fileName={`Order_${new Date().toLocaleDateString()}`}
               />
             </div>
           </div>
