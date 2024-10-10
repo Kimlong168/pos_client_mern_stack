@@ -34,6 +34,22 @@ export const useAttendance = (id) => {
   );
 };
 
+export const useAttendancesByEmployeeId = (id) => {
+  return useQuery(
+    ["attendance", id],
+    async () => {
+      const response = await axiosClient.get(`/attendance/employee/${id}`);
+      return response.data;
+    },
+    {
+      select: (response) => {
+        const formatedData = response.data;
+        return formatedData;
+      },
+    }
+  );
+};
+
 export const useCheckInAttendance = () => {
   const queryClient = useQueryClient();
 

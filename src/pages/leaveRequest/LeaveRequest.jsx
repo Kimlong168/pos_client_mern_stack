@@ -323,11 +323,11 @@ const LeaveRequest = () => {
           <div className="flex gap-2 w-full">
             <ExportToExcel
               data={dataToExport}
-              fileName={`Leave-request${new Date().toLocaleDateString()}`}
+              fileName={`Leave_request_${new Date().toLocaleDateString()}`}
             />
             <ExportToPDF
               data={dataToExport}
-              fileName={`Leave-request ${new Date().toLocaleDateString()}`}
+              fileName={`Leave_request_${new Date().toLocaleDateString()}`}
             />
           </div>
         </div>

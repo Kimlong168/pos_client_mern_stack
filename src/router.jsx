@@ -48,7 +48,9 @@ import UpdateQrCode from "./pages/qrcode/UpdateQrCode";
 
 import Attendance from "./pages/attendance";
 import LeaveRequest from "./pages/leaveRequest";
+import CrudLeaveRequest from "./pages/leaveRequest/CrudLeaveRequest";
 import AdminApprovedOrRejected from "./pages/leaveRequest/AdminApprovedOrRejected";
+import CheckInCheckOut from "./pages/attendance/CheckInCheckOut";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -196,6 +198,7 @@ const router = createBrowserRouter([
         path: "/leaveRequest",
         element: <LeaveRequest />,
       },
+
       {
         path: "/leaveRequest/approve/:id",
         element: <AdminApprovedOrRejected />,
@@ -229,6 +232,25 @@ const router = createBrowserRouter([
       <PrivateRoute
         roles={["cashier", "inventoryStaff"]}
         element={StaffProfile}
+      />
+    ),
+  },
+  {
+    path: "/user/leaveRequest",
+    element: (
+      <PrivateRoute
+        roles={["cashier", "inventoryStaff"]}
+        element={CrudLeaveRequest}
+      />
+    ),
+  },
+
+  {
+    path: "/user/attendance",
+    element: (
+      <PrivateRoute
+        roles={["cashier", "inventoryStaff"]}
+        element={CheckInCheckOut}
       />
     ),
   },

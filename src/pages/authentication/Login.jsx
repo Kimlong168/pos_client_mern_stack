@@ -42,7 +42,7 @@ const Login = () => {
       const attValue = getQueryParam("att");
 
       if (attValue) {
-        navigate(`/user/profile?att=${attValue}`);
+        navigate(`/user/attendance?att=${attValue}`);
       } else {
         navigate("/");
       }

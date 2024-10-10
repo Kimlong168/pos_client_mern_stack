@@ -34,6 +34,23 @@ export const useLeaveRequest = (id) => {
   );
 };
 
+export const useLeaveRequestsByEmployeeId = (id) => {
+  return useQuery(
+    ["leaveRequest", id],
+    async () => {
+      const response = await axiosClient.get(`/leave-requests/employee/${id}`);
+      return response.data;
+    },
+    {
+      select: (response) => {
+        const formatedData = response.data;
+        return formatedData;
+      },
+    }
+  );
+};
+
+
 export const useCreateLeaveRequest = () => {
   const queryClient = useQueryClient();
 
@@ -113,7 +130,10 @@ export const useClearAllLeaveRequests = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("leaveRequests");
+        
       },
     }
   );
 };
+
+

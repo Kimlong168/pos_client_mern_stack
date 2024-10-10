@@ -4,9 +4,8 @@ import QRCode from "react-qr-code";
 import { MdCloudDownload } from "react-icons/md";
 import downloadQrcode from "@/utils/downloadQrcode";
 
-const url = import.meta.env.VITE_APP_BASE_URL
-  ? import.meta.env.VITE_APP_BASE_URL + "/user/profile?att="
-  : "http://localhost:5173/user/profile?att=";
+const url = import.meta.env.VITE_APP_BASE_URL + "/user/attendance?att=";
+
 export const renderRows = (item, index, handleDelete) => {
   return (
     <>
