@@ -56,7 +56,7 @@ const StaffProfile = () => {
             </Link>
 
             <Link to="/user/leaveRequest" className="w-full">
-              <button className="w-full text-white bg-red-500 hover:bg-red-600  px-3 py-2 border border-gray-300 rounded-md">
+              <button className="w-full text-white bg-blue-600 hover:bg-blue-700  px-3 py-2 border border-gray-300 rounded-md">
                 Request Leave
               </button>
             </Link>
@@ -64,10 +64,7 @@ const StaffProfile = () => {
         </form>
 
         <Link to="/">
-          <button
-            title="Back Home"
-            className="mt-4 flex items-center gap-2 text-white w-fit px-2 py-2 bg-red-500 hover:bg-orange-600 border border-gray-300 rounded-xl top-0 left-4 absolute"
-          >
+          <button className="mt-4 flex items-center gap-2 text-white w-fit px-2 py-2 bg-red-500 hover:bg-orange-600 border border-white rounded-xl top-0 left-4 fixed">
             <MdOutlineArrowBackIos />
           </button>
         </Link>

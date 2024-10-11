@@ -169,9 +169,9 @@ const CrudLeaveRequest = () => {
 
   return (
     <div
-    className={`flex justify-center items-center relative h-screen bg-black/70`}
-  >
-    <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md relative m-2">
+      className={`flex justify-center items-center relative min-h-screen bg-black/70 py-6`}
+    >
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md relative m-2">
         <Link to="/user/profile">
           <button className="mt-4 flex items-center gap-2 text-white w-fit px-2 py-2 bg-red-500 hover:bg-orange-600 border border-white rounded-xl top-0 left-4 fixed">
             <MdOutlineArrowBackIos />
@@ -291,7 +291,7 @@ const CrudLeaveRequest = () => {
         {/* listing all leave requests */}
         <div>
           {isLoading ? (
-            "Fetching leave requests..."
+            <small className="mt-2.5 block">Fetching Leave Requests...</small>
           ) : (
             <div>
               <div className="flex items-center justify-between mt-6">
@@ -427,7 +427,7 @@ const CrudLeaveRequest = () => {
                   ))}
                 </ul>
               ) : (
-                "No leave requests found."
+                <small className="mt-2.5 block">No Leave Request Found</small>
               )}
             </div>
           )}

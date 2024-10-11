@@ -308,7 +308,7 @@ const CheckInCheckOut = () => {
 
                 <table>
                   <tr>
-                    <td className="pr-12">Time In:</td>
+                    <td className="pr-12">Check In:</td>
                     <td className="pr-12 truncate">
                       {getFormattedTimeWithAMPM(isCheckIn.time_in)} (
                       {isCheckIn.check_in_status}
@@ -318,7 +318,7 @@ const CheckInCheckOut = () => {
                     </td>
                   </tr>
                   <tr>
-                    <td className="pr-12 truncate">Time Out:</td>
+                    <td className="pr-12 truncate">Check Out:</td>
                     <td className="pr-12">
                       {isCheckIn.time_out ? (
                         getFormattedTimeWithAMPM(isCheckIn.time_out) +
@@ -377,7 +377,9 @@ const CheckInCheckOut = () => {
           {/* listing all att requests */}
           <div>
             {isLoading ? (
-              "Fetching att requests..."
+              <small className="mt-2.5 block">
+                Fetching attendance requests...
+              </small>
             ) : (
               <div>
                 <div className="flex items-center justify-between mt-6">
@@ -489,7 +491,9 @@ const CheckInCheckOut = () => {
                     ))}
                   </ul>
                 ) : (
-                  <small className="mt-2.5 block">No att requests found.</small>
+                  <small className="mt-2.5 block">
+                    No attendance requests found
+                  </small>
                 )}
               </div>
             )}
