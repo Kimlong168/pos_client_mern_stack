@@ -1,5 +1,8 @@
 import Loading from "@/components/ui/Loading";
-import { useAttendanceReport } from "@/hooks/report/useReport";
+import {
+  useAttendanceReport,
+  useAttendanceReportByThisMonth,
+} from "@/hooks/report/useReport";
 import { useEffect, useRef, useState } from "react";
 
 import { PiDownloadBold } from "react-icons/pi";
@@ -9,10 +12,22 @@ import {
   getFormattedDate,
   getFormattedTimeWithAMPM,
 } from "@/utils/getFormattedDate";
+import TotalAbsentByEmployee from "@/components/chart/TotalAbsentByEmployee";
+import TotalOnLeaveByEmployee from "@/components/chart/TotalOnLeaveByEmployee";
+import TotalOnTimeByEmployee from "@/components/chart/TotalOnTimeByEmployee";
+import TotalNormalCheckOutByEmployee from "@/components/chart/TotalNormalCheckOutByEmployee";
+import TotalMissedCheckOutByEmployee from "@/components/chart/TotalMissedCheckOutByEmployee";
+import TotalLateByEmployee from "@/components/chart/TotalLateByEmployee";
+import TotalEarlyCheckOutByEmployee from "@/components/chart/TotalEarlyCheckOutByEmployee";
 
 const AttendanceReport = () => {
   const [date, setDate] = useState(new Date());
   const { data, isLoading, isError, refetch } = useAttendanceReport(date);
+  const {
+    data: data2,
+    isLoading: isLoading2,
+    isError: isError2,
+  } = useAttendanceReportByThisMonth(date);
 
   useEffect(() => {
     refetch();
@@ -42,9 +57,9 @@ const AttendanceReport = () => {
     setDate(e.target.value);
   };
 
-  if (isLoading && !data) {
+  if (isLoading || isLoading2) {
     return <Loading />;
-  } else if (isError) {
+  } else if (isError || isError2) {
     return <div>Error...</div>;
   }
   return (
@@ -67,15 +82,6 @@ const AttendanceReport = () => {
               onClick={() => setDate(new Date())}
             >
               Today
-            </button>
-          </div>
-
-          <div>
-            <button className="bg-red-400 text-white font-bold underline text-3xl rounded">
-           Today
-            </button>
-            <button className="bg-red-400 text-white font-bold underline text-3xl rounded">
-              all time
             </button>
           </div>
         </div>
@@ -287,6 +293,21 @@ const AttendanceReport = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* chart */}
+
+      <h3 className="text-2xl font-bold my-3">
+        Total Attendance by Employee for this month
+      </h3>
+      <div className="grid auto-rows-auto  lg:grid-cols-2 gap-5">
+        <TotalAbsentByEmployee data={data2} />
+        <TotalOnLeaveByEmployee data={data2} />
+        <TotalOnTimeByEmployee data={data2} />
+        <TotalNormalCheckOutByEmployee data={data2} />
+        <TotalMissedCheckOutByEmployee data={data2} />
+        <TotalLateByEmployee data={data2} />
+        <TotalEarlyCheckOutByEmployee data={data2} />
       </div>
     </div>
   );

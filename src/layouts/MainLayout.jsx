@@ -138,6 +138,22 @@ const AdminLayout = () => {
       icon: <BiPurchaseTag />,
       pathName: "/purchaseOrder",
     },
+
+    {
+      tabName: "Qr-Code",
+      icon: <FaQrcode />,
+      pathName: "/qrcode",
+    },
+    {
+      tabName: "Attendance",
+      icon: <LuClipboardList />,
+      pathName: "/attendance",
+    },
+    {
+      tabName: "Leave Reqest",
+      icon: <VscGitPullRequestGoToChanges />,
+      pathName: "/leaveRequest",
+    },
     {
       tabName: "Mail",
       icon: <IoMailOutline />,
@@ -162,21 +178,6 @@ const AdminLayout = () => {
       tabName: "Profile",
       icon: <IoSettingsOutline />,
       pathName: "/profile",
-    },
-    {
-      tabName: "Qr-Code",
-      icon: <FaQrcode />,
-      pathName: "/qrcode",
-    },
-    {
-      tabName: "Attendance",
-      icon: <LuClipboardList />,
-      pathName: "/attendance",
-    },
-    {
-      tabName: "Leave Reqest",
-      icon: <VscGitPullRequestGoToChanges />,
-      pathName: "/leaveRequest",
     },
   ];
 

@@ -71,6 +71,27 @@ const CardGroup = ({ itemNumber }) => {
           numberOfItem={itemNumber?.purchaseOrder}
         />
         <Card
+          title="Qr-Code"
+          subtitle="Manage qr-code"
+          href="/qrcode"
+          Icon={FaQrcode}
+          numberOfItem={itemNumber?.mail}
+        />
+        <Card
+          title="Attendance"
+          subtitle="View attendance"
+          href="/attendance"
+          Icon={LuClipboardList}
+          numberOfItem={itemNumber?.mail}
+        />
+        <Card
+          title="Leave Request"
+          subtitle="Approve or Reject leave request"
+          href="/leaveRequest"
+          Icon={VscGitPullRequestGoToChanges}
+          numberOfItem={itemNumber?.mail}
+        />
+        <Card
           title="Mail"
           subtitle="Send mails"
           href="/mail"
@@ -103,27 +124,6 @@ const CardGroup = ({ itemNumber }) => {
           subtitle="Manage profile"
           href="/profile"
           Icon={IoSettingsOutline}
-          numberOfItem={itemNumber?.mail}
-        />
-        <Card
-          title="Qr-Code"
-          subtitle="Manage qr-code"
-          href="/qrcode"
-          Icon={FaQrcode}
-          numberOfItem={itemNumber?.mail}
-        />
-        <Card
-          title="Attendance"
-          subtitle="View attendance"
-          href="/attendance"
-          Icon={LuClipboardList}
-          numberOfItem={itemNumber?.mail}
-        />
-        <Card
-          title="Leave Request"
-          subtitle="Approve or Reject leave request"
-          href="/leaveRequest"
-          Icon={VscGitPullRequestGoToChanges}
           numberOfItem={itemNumber?.mail}
         />
       </div>
