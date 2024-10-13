@@ -149,9 +149,14 @@ const AdminLayout = () => {
       pathName: "/telegram",
     },
     {
-      tabName: "Report",
+      tabName: "Sale Report",
       icon: <TbReport />,
-      pathName: "/report",
+      pathName: "/report/sale",
+    },
+    {
+      tabName: "Attendance Report",
+      icon: <TbReport />,
+      pathName: "/report/attendance",
     },
     {
       tabName: "Profile",

@@ -19,7 +19,7 @@ import {
 import { PiDownloadBold } from "react-icons/pi";
 import html2canvas from "html2canvas";
 import getRangeOfDate from "@/utils/getRangeOfDate";
-const Report = () => {
+const SaleReport = () => {
   const [date, setDate] = useState("today");
   const { data, isLoading, isError, refetch } = useSaleReport(date);
 
@@ -166,7 +166,7 @@ const Report = () => {
           <div className="w-full">
             <TotalSaleByProduct
               date={getTitle(date)}
-              data={data.total_sales_by_product.slice(0, 7)}
+              data={data.total_sales_by_product?.slice(0, 7)}
             />
           </div>
           <div className="w-full">
@@ -187,4 +187,4 @@ const Report = () => {
   );
 };
 
-export default Report;
+export default SaleReport;

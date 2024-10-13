@@ -34,7 +34,6 @@ import CreatePurchaseOrder from "./pages/purchaseOrder/CreatePurchaseOrder";
 import UpdatePurchaseOrder from "./pages/purchaseOrder/UpdatePurchaseOrder";
 import ShowPurhcaseOrder from "./pages/purchaseOrder/ShowPurhcaseOrder";
 import Mail from "./pages/mail/Mail";
-import Report from "./pages/report/Report";
 
 import Profile from "./pages/profile/Profile";
 import StaffProfile from "./pages/profile/StaffProfile";
@@ -51,6 +50,8 @@ import LeaveRequest from "./pages/leaveRequest";
 import CrudLeaveRequest from "./pages/leaveRequest/CrudLeaveRequest";
 import AdminApprovedOrRejected from "./pages/leaveRequest/AdminApprovedOrRejected";
 import CheckInCheckOut from "./pages/attendance/CheckInCheckOut";
+import SaleReport from "./pages/report/SaleReport";
+import AttendanceReport from "./pages/report/AttendanceReport";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -175,8 +176,12 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "/report",
-        element: <Report />,
+        path: "/report/sale",
+        element: <SaleReport />,
+      },
+      {
+        path: "/report/attendance",
+        element: <AttendanceReport />,
       },
       {
         path: "/qrcode",

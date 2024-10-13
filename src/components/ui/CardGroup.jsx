@@ -85,9 +85,16 @@ const CardGroup = ({ itemNumber }) => {
           numberOfItem={itemNumber?.mail}
         />
         <Card
-          title="Report"
-          subtitle="View reports"
-          href="/report"
+          title="Sale Report"
+          subtitle="View sale reports"
+          href="/report/sale"
+          Icon={TbReport}
+          numberOfItem={itemNumber?.mail}
+        />
+        <Card
+          title="Attendance Report"
+          subtitle="View attendance reports"
+          href="/report/attendance"
           Icon={TbReport}
           numberOfItem={itemNumber?.mail}
         />

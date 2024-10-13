@@ -1,6 +1,7 @@
 import ExportToExcel from "@/components/table/ExportToExcel";
 import ExportToPDF from "@/components/table/ExportToPDF";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import Loading from "@/components/ui/Loading";
 import { AuthContext } from "@/contexts/AuthContext";
 import {
   useAttendancesByEmployeeId,
@@ -22,7 +23,11 @@ const WORK_START_TIME = new Date().setHours(9, 0, 0); // 9:00 AM
 const WORK_END_TIME = new Date().setHours(17, 0, 0); // 5:00 P
 const CheckInCheckOut = () => {
   const { user } = useContext(AuthContext);
-  const { data, isLoading, refetch } = useAttendancesByEmployeeId(user._id);
+  const {
+    data: attendances,
+    isLoading,
+    refetch,
+  } = useAttendancesByEmployeeId(user._id);
   const checkIn = useCheckInAttendance();
   const checkOut = useCheckOutAttendance();
   const navigate = useNavigate();
@@ -33,25 +38,28 @@ const CheckInCheckOut = () => {
   };
 
   const attValue = getQueryParam("att");
-  const attendances = JSON.parse(localStorage.getItem("attendances"));
+  // const attendances = JSON.parse(localStorage.getItem("attendances"));
   const [showModal, setShowModal] = useState(false);
   const [scannerResult, setScannerResult] = useState(attValue || null);
+  const [isCheckIn, setIsCheckIn] = useState(null);
   // const [currentTime, setCurrentTime] = useState(new Date());
-  const isCheckIn = attendances
-    ? attendances.find(
-        (att) =>
-          att.employee === user._id && isSameDate(att.time_in, new Date())
-      )
-    : null;
+  // const isCheckIn = attendances
+  //   ? attendances.find((att) => isSameDate(att.time_in, new Date()))
+  //   : null;
 
   const [attendancesHistory, setAttendancesHistory] = useState([]);
   const [expandIndex, setExpandIndex] = useState(0);
 
   useEffect(() => {
-    if (data) {
-      setAttendancesHistory(data);
+    if (attendances) {
+      setAttendancesHistory(attendances);
+      const isCheckedInToday = attendances
+        ? attendances.find((att) => isSameDate(att.time_in, new Date()))
+        : null;
+
+      setIsCheckIn(isCheckedInToday);
     }
-  }, [data]);
+  }, [attendances]);
 
   useEffect(() => {
     // prevent from displaying the scanner multiple times
@@ -132,27 +140,9 @@ const CheckInCheckOut = () => {
             refetch();
             notify("Check in successfully", "success");
             setScannerResult(null);
-            // save each record as an array but make sure the employee is not the same
-            if (attendances) {
-              const todayAttendances = attendances.filter((att) =>
-                isSameDate(att.time_in, new Date())
-              );
-
-              localStorage.setItem(
-                "attendances",
-                JSON.stringify([...todayAttendances, isSuccess.data])
-              );
-            } else {
-              localStorage.setItem(
-                "attendances",
-                JSON.stringify([isSuccess.data])
-              );
-            }
 
             navigate("/user/attendance");
-          }
-
-          if (isSuccess.status === "error") {
+          } else {
             notify(isSuccess.error.message, "info");
             setScannerResult(null);
           }
@@ -291,6 +281,8 @@ const CheckInCheckOut = () => {
     };
   });
 
+  if (isLoading) return <Loading />;
+
   return (
     <div>
       <div
@@ -375,121 +367,123 @@ const CheckInCheckOut = () => {
           </div>
 
           {/* listing all att requests */}
-          <div>
+          <div className="mt-5">
+            <h3 className="text-xl font-semibold w-full">
+              Attendances History{" "}
+              {attendancesHistory?.length > 0 &&
+                `(${attendancesHistory.length})`}
+            </h3>
             {isLoading ? (
               <small className="mt-2.5 block">
                 Fetching attendance requests...
               </small>
             ) : (
               <div>
-                <div className="flex items-center justify-between mt-6">
-                  <h3 className="text-xl font-semibold w-full">
-                    Attendances History{" "}
-                    {attendancesHistory?.length > 0 &&
-                      `(${attendancesHistory.length})`}
-                  </h3>
-
-                  {attendancesHistory?.length > 0 && (
-                    <div className="flex gap-1 w-fit justify-end">
-                      <ExportToExcel
-                        data={dataToExport}
-                        fileName={`${
-                          user.name
-                        }_attendances_history${new Date().toLocaleDateString()}`}
-                      />
-                      <ExportToPDF
-                        data={dataToExport}
-                        fileName={`${
-                          user.name
-                        }_attendances_history_${new Date().toLocaleDateString()}`}
-                      />
-                    </div>
-                  )}
-                </div>
                 {attendancesHistory.length > 0 ? (
-                  <ul className="mt-4 space-y-2">
-                    {attendancesHistory.map((att, index) => (
-                      <li
-                        key={index}
-                        className={`flex justify-between items-center p-2 border ${
-                          isSameDate(att.date, new Date())
-                            ? "border-green-700"
-                            : "border-gray-200"
-                        } rounded-md relative`}
-                      >
-                        <div
-                          className="top-1.5 right-1.5 absolute cursor-pointer"
-                          onClick={() => {
-                            expandIndex === index
-                              ? setExpandIndex(null)
-                              : setExpandIndex(index);
-                          }}
+                  <>
+                    <ul className="mt-4 space-y-2">
+                      {attendancesHistory.map((att, index) => (
+                        <li
+                          key={index}
+                          className={`flex justify-between items-center p-2 border ${
+                            isSameDate(att.date, new Date())
+                              ? "border-green-700"
+                              : "border-gray-200"
+                          } rounded-md relative`}
                         >
-                          {expandIndex === index ? (
-                            <IoIosArrowDropup size={22} />
-                          ) : (
-                            <IoIosArrowDropdown size={22} />
-                          )}
-                        </div>
-                        <div>
-                          <div>
-                            <strong className="min-w-[150px] inline-block">
-                              Date:
-                            </strong>
-                            {getFormattedDate(att.date)}
+                          <div
+                            className="top-1.5 right-1.5 absolute cursor-pointer"
+                            onClick={() => {
+                              expandIndex === index
+                                ? setExpandIndex(null)
+                                : setExpandIndex(index);
+                            }}
+                          >
+                            {expandIndex === index ? (
+                              <IoIosArrowDropup size={22} />
+                            ) : (
+                              <IoIosArrowDropdown size={22} />
+                            )}
                           </div>
                           <div>
-                            <strong className="min-w-[150px] inline-block">
-                              Check In:
-                            </strong>
-                            <span>
-                              {getFormattedTimeWithAMPM(att.time_in)} (
-                              {att.check_in_status})
-                            </span>
-                          </div>
+                            <div>
+                              <strong className="min-w-[150px] inline-block">
+                                Date:
+                              </strong>
+                              {getFormattedDate(att.date)}
+                            </div>
+                            <div>
+                              <strong className="min-w-[150px] inline-block">
+                                Check In:
+                              </strong>
+                              <span>
+                                {getFormattedTimeWithAMPM(att.time_in)} (
+                                {att.check_in_status})
+                              </span>
+                            </div>
 
-                          <div>
-                            <strong className="min-w-[150px] inline-block">
-                              Check Out:
-                            </strong>
-                            <span>
-                              {att.time_out
-                                ? getFormattedTimeWithAMPM(att.time_out) +
-                                  ` (${att.check_out_status}${
-                                    att.check_out_status === "Early Check-out"
-                                      ? " " + att.checkOutEarlyDuration
-                                      : ""
-                                  })`
-                                : "Not yet checked out"}
-                            </span>
-                          </div>
+                            <div>
+                              <strong className="min-w-[150px] inline-block">
+                                Check Out:
+                              </strong>
+                              <span>
+                                {att.time_out
+                                  ? getFormattedTimeWithAMPM(att.time_out) +
+                                    ` (${att.check_out_status}${
+                                      att.check_out_status === "Early Check-out"
+                                        ? " " + att.checkOutEarlyDuration
+                                        : ""
+                                    })`
+                                  : "Not yet checked out"}
+                              </span>
+                            </div>
 
-                          {expandIndex === index && (
-                            <>
-                              <div>
-                                <strong className="min-w-[150px] inline-block">
-                                  Late Duration:
-                                </strong>
-                                {att.checkInLateDuration}
-                              </div>
-                              <div>
-                                <strong className="min-w-[150px] inline-block">
-                                  Early Duration:
-                                </strong>
-                                {att.checkOutEarlyDuration}
-                              </div>
-                              <div>
-                                <strong className="min-w-[150px] inline-block">
-                                  Location:
-                                </strong>
-                                {att.qr_code?.location}
-                              </div>
-                            </>
-                          )}
+                            {expandIndex === index && (
+                              <>
+                                <div>
+                                  <strong className="min-w-[150px] inline-block">
+                                    Late Duration:
+                                  </strong>
+                                  {att.checkInLateDuration}
+                                </div>
+                                <div>
+                                  <strong className="min-w-[150px] inline-block">
+                                    Early Duration:
+                                  </strong>
+                                  {att.checkOutEarlyDuration}
+                                </div>
+                                <div>
+                                  <strong className="min-w-[150px] inline-block">
+                                    Location:
+                                  </strong>
+                                  {att.qr_code?.location}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    {attendancesHistory?.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        <div>Export to:</div>
+                        <div className="flex gap-1 w-fit justify-end">
+                          <ExportToExcel
+                            data={dataToExport}
+                            fileName={`${
+                              user.name
+                            }_attendances_history${new Date().toLocaleDateString()}`}
+                          />
+                          <ExportToPDF
+                            data={dataToExport}
+                            fileName={`${
+                              user.name
+                            }_attendances_history_${new Date().toLocaleDateString()}`}
+                          />
                         </div>
-                      </li>
-                    ))}
-                  </ul>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <small className="mt-2.5 block">
                     No attendance requests found

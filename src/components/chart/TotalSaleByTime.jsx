@@ -17,7 +17,7 @@ import {
 export const description = "A pie chart with a legend";
 
 export default function TotalSaleByTime({ data, date = "last 5 months" }) {
-  const chartData = data.map((item, index) => {
+  const chartData = data?.map((item, index) => {
     return {
       time: item.time,
       amount: item.amount,
@@ -25,7 +25,7 @@ export default function TotalSaleByTime({ data, date = "last 5 months" }) {
     };
   });
 
-  const chartConfig = data.reduce((acc, item) => {
+  const chartConfig = data?.reduce((acc, item) => {
     acc[item.time] = {
       label: item.time,
       color: "red",

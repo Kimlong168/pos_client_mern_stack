@@ -27,6 +27,7 @@ const CrudLeaveRequest = () => {
   const createLeaveRequest = useCreateLeaveRequest();
   const updateLeaveRequest = useUpdateLeaveRequest();
   const leaveTypes = ["Sick Leave", "Vacation", "Emergency Leave", "Other"];
+
   const [leaveRequest, setLeaveRequest] = useState({
     type: "",
     start_date: "",
@@ -289,143 +290,149 @@ const CrudLeaveRequest = () => {
         </div>
 
         {/* listing all leave requests */}
-        <div>
+        <div className="mt-5">
+          <h3 className="text-xl font-semibold w-full">
+            All Leave Requests{" "}
+            {leaveRequests?.length > 0 && `(${leaveRequests.length})`}
+          </h3>
+
           {isLoading ? (
             <small className="mt-2.5 block">Fetching Leave Requests...</small>
           ) : (
             <div>
-              <div className="flex items-center justify-between mt-6">
-                <h3 className="text-xl font-semibold w-full">
-                  All Leave Requests{" "}
-                  {leaveRequests?.length > 0 && `(${leaveRequests.length})`}
-                </h3>
-
-                <div className="flex gap-1 w-fit justify-end">
-                  <ExportToExcel
-                    data={dataToExport}
-                    fileName={`${
-                      user.name
-                    }_Leave_request_${new Date().toLocaleDateString()}`}
-                  />
-                  <ExportToPDF
-                    data={dataToExport}
-                    fileName={`${
-                      user.name
-                    }_Leave_request_${new Date().toLocaleDateString()}`}
-                  />
-                </div>
-              </div>
               {leaveRequests.length > 0 ? (
-                <ul className="mt-4 space-y-2">
-                  {leaveRequests.map((leave, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center p-2 border border-gray-200 rounded-md relative"
-                    >
-                      <div
-                        className="top-1.5 right-1.5 absolute cursor-pointer"
-                        onClick={() => {
-                          expandIndex === index
-                            ? setExpandIndex(null)
-                            : setExpandIndex(index);
-                        }}
+                <>
+                  <ul className="mt-4 space-y-2">
+                    {leaveRequests.map((leave, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center p-2 border border-gray-200 rounded-md relative"
                       >
-                        {expandIndex === index ? (
-                          <IoIosArrowDropup size={22} />
-                        ) : (
-                          <IoIosArrowDropdown size={22} />
-                        )}
-                      </div>
-                      <div>
-                        <div>
-                          <strong className="min-w-[150px] inline-block">
-                            Status:
-                          </strong>
-                          <span
-                            className={
-                              (leave.status === "Approved"
-                                ? "bg-green-600/20 border-green-600 text-green-600"
-                                : leave.status == "Rejected"
-                                ? "bg-red-500/20 border-red-500 text-red-500"
-                                : "bg-orange-500/20 border-orange-500 text-orange-500") +
-                              " px-2  h-7 rounded w-[90px] text-center border"
-                            }
-                          >
-                            {leave.status}
-                          </span>
-                        </div>
-                        <div>
-                          <strong className="min-w-[150px] inline-block">
-                            Type:
-                          </strong>
-                          {leave.type}
-                        </div>
-                        <div>
-                          <strong className="min-w-[150px] inline-block">
-                            Start Date:
-                          </strong>
-                          {getFormattedDate(leave.start_date)}
-                        </div>
-                        <div>
-                          <strong className="min-w-[150px] inline-block">
-                            End Date:
-                          </strong>
-                          {getFormattedDate(leave.end_date)}
-                        </div>
-
-                        {expandIndex === index && (
-                          <>
-                            {" "}
-                            <div className="line-clamp-1 hover:line-clamp-none">
-                              <strong className="min-w-[150px] inline-block">
-                                Reason:
-                              </strong>
-                              {leave.reason}
-                            </div>
-                            <div>
-                              <strong className="min-w-[150px] inline-block">
-                                Request Date:
-                              </strong>
-                              {getFormattedDate(leave.created_at)}
-                            </div>
-                            <div>
-                              <strong className="min-w-[150px] inline-block">
-                                A/R By:
-                              </strong>
-                              {leave.approvedOrRejectedBy?.name || "Not yet"}
-                            </div>
-                            <div className="line-clamp-1 hover:line-clamp-none">
-                              <strong className="min-w-[150px] inline-block">
-                                Comment:
-                              </strong>
-                              {leave.comment}
-                            </div>
-                          </>
-                        )}
-
-                        <div className="mt-1">
-                          {leave.status === "Pending" && (
-                            <>
-                              <button
-                                onClick={() => handleEdit(index)}
-                                className="text-blue-600 hover:underline"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                disabled={deleteLeaveRequest.isLoading}
-                                onClick={() => handleDelete(leave._id)}
-                                className="ml-3 text-red-600 hover:underline"
-                              >
-                                Delete
-                              </button>
-                            </>
+                        <div
+                          className="top-1.5 right-1.5 absolute cursor-pointer"
+                          onClick={() => {
+                            expandIndex === index
+                              ? setExpandIndex(null)
+                              : setExpandIndex(index);
+                          }}
+                        >
+                          {expandIndex === index ? (
+                            <IoIosArrowDropup size={22} />
+                          ) : (
+                            <IoIosArrowDropdown size={22} />
                           )}
                         </div>
+                        <div>
+                          <div>
+                            <strong className="min-w-[150px] inline-block">
+                              Status:
+                            </strong>
+                            <span
+                              className={
+                                (leave.status === "Approved"
+                                  ? "bg-green-600/20 border-green-600 text-green-600"
+                                  : leave.status == "Rejected"
+                                  ? "bg-red-500/20 border-red-500 text-red-500"
+                                  : "bg-orange-500/20 border-orange-500 text-orange-500") +
+                                " px-2  h-7 rounded w-[90px] text-center border"
+                              }
+                            >
+                              {leave.status}
+                            </span>
+                          </div>
+                          <div>
+                            <strong className="min-w-[150px] inline-block">
+                              Type:
+                            </strong>
+                            {leave.type}
+                          </div>
+                          <div>
+                            <strong className="min-w-[150px] inline-block">
+                              Start Date:
+                            </strong>
+                            {getFormattedDate(leave.start_date)}
+                          </div>
+                          <div>
+                            <strong className="min-w-[150px] inline-block">
+                              End Date:
+                            </strong>
+                            {getFormattedDate(leave.end_date)}
+                          </div>
+
+                          {expandIndex === index && (
+                            <>
+                              {" "}
+                              <div className="line-clamp-1 hover:line-clamp-none">
+                                <strong className="min-w-[150px] inline-block">
+                                  Reason:
+                                </strong>
+                                {leave.reason}
+                              </div>
+                              <div>
+                                <strong className="min-w-[150px] inline-block">
+                                  Request Date:
+                                </strong>
+                                {getFormattedDate(leave.created_at)}
+                              </div>
+                              <div>
+                                <strong className="min-w-[150px] inline-block">
+                                  A/R By:
+                                </strong>
+                                {leave.approvedOrRejectedBy?.name || "Not yet"}
+                              </div>
+                              <div className="line-clamp-1 hover:line-clamp-none">
+                                <strong className="min-w-[150px] inline-block">
+                                  Comment:
+                                </strong>
+                                {leave.comment}
+                              </div>
+                            </>
+                          )}
+
+                          <div className="mt-1">
+                            {leave.status === "Pending" && (
+                              <>
+                                <button
+                                  onClick={() => handleEdit(index)}
+                                  className="text-blue-600 hover:underline"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  disabled={deleteLeaveRequest.isLoading}
+                                  onClick={() => handleDelete(leave._id)}
+                                  className="ml-3 text-red-600 hover:underline"
+                                >
+                                  Delete
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {leaveRequests.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <span> Export to:</span>
+                      <div className="flex gap-1 w-fit justify-end">
+                        <ExportToExcel
+                          data={dataToExport}
+                          fileName={`${
+                            user.name
+                          }_Leave_request_${new Date().toLocaleDateString()}`}
+                        />
+                        <ExportToPDF
+                          data={dataToExport}
+                          fileName={`${
+                            user.name
+                          }_Leave_request_${new Date().toLocaleDateString()}`}
+                        />
                       </div>
-                    </li>
-                  ))}
-                </ul>
+                    </div>
+                  )}
+                </>
               ) : (
                 <small className="mt-2.5 block">No Leave Request Found</small>
               )}
