@@ -23,8 +23,12 @@ import { useUsers } from "../../hooks/user/useUser";
 import ExportToPDF from "@/components/table/ExportToPDF";
 
 const Order = () => {
-  const { data, isLoading } = useOrders();
-  const { data: users, isLoading: isUserLoading } = useUsers();
+  const { data, isLoading, isError } = useOrders();
+  const {
+    data: users,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useUsers();
   const deleteOrder = useDeleteOrder();
   const updateOrder = useUpdateOrder();
   const {
@@ -224,6 +228,9 @@ const Order = () => {
       Status: order.status,
     };
   });
+  if (isError || isUserError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>

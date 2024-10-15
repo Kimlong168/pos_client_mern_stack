@@ -16,7 +16,14 @@ export const renderRows = (item, index, handleDelete) => {
           {getFormattedTimeWithAMPM(item.time_in)} ({item.check_in_status})
         </td>
         <td className="px-4 py-3 min-w-[250px]">
-          {getFormattedTimeWithAMPM(item.time_out)} ({item.check_out_status})
+          {item.check_out_status ? (
+            <>
+              {item.time_out ? getFormattedTimeWithAMPM(item.time_out) : ""} (
+              {item.check_out_status})
+            </>
+          ) : (
+            "Not Yet"
+          )}
         </td>
         <td className="px-4 py-3 min-w-[250px]">
           {getFormattedDate(item.date)}

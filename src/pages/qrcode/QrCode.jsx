@@ -15,7 +15,7 @@ import { useDeleteQrcode, useQrcodes } from "@/hooks/qrcode/useQrcode";
 import { QrcodeContext } from "@/contexts/QrocodeContext";
 
 const QrCode = () => {
-  const { data, isLoading } = useQrcodes();
+  const { data, isLoading, isError } = useQrcodes();
   const deleteCategory = useDeleteQrcode();
 
   const {
@@ -64,6 +64,14 @@ const QrCode = () => {
       }
     });
   };
+
+  if (isError) {
+    return (
+      <div className="w-full mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <p>QrCode not found</p>
+      </div>
+    );
+  }
 
   return (
     <div>

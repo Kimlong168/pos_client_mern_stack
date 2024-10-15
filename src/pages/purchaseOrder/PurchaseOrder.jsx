@@ -24,8 +24,8 @@ import ExportToExcel from "@/components/table/ExportToExcel";
 import ExportToPDF from "@/components/table/ExportToPDF";
 import { getFormattedDate } from "@/utils/getFormattedDate";
 const PurchaseOrder = () => {
-  const { data, isLoading } = usePurchaseOrders();
-  const { data: suppliers, isLoading: isSupplierLoading } = useSuppliers();
+  const { data, isLoading, isError } = usePurchaseOrders();
+  const { data: suppliers, isLoading: isSupplierLoading, isError: isSupplierError } = useSuppliers();
   const deletePurchaseOrder = useDeletePurchaseOrder();
   const updatePurchaseOrder = useUpdatePurchaseOrder();
 
@@ -213,6 +213,11 @@ const PurchaseOrder = () => {
     Status: purchaseOrder.status,
     Remarks: purchaseOrder.remarks,
   }));
+
+
+  if(isError || isSupplierError){
+    return <div>Error...</div>
+  }
 
   return (
     <div>

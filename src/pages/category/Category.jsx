@@ -18,7 +18,7 @@ import {
 } from "../../hooks/category/useCategory";
 
 const Category = () => {
-  const { data, isLoading } = useCategories();
+  const { data, isLoading , isError} = useCategories();
   const deleteCategory = useDeleteCategory();
 
   const {
@@ -67,6 +67,10 @@ const Category = () => {
       }
     });
   };
+
+  if(isError){
+    return <div>Error...</div>
+  }
 
   return (
     <div>

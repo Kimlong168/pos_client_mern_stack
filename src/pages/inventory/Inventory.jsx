@@ -23,7 +23,7 @@ import ExportToExcel from "@/components/table/ExportToExcel";
 import ExportToPDF from "@/components/table/ExportToPDF";
 import { getFormattedDate } from "@/utils/getFormattedDate";
 const Inventory = () => {
-  const { data, isLoading } = useInventories();
+  const { data, isLoading, isError } = useInventories();
   const { data: users, isLoading: isUserLoading } = useUsers();
   const { data: products, isLoading: isProductLoading } = useProducts();
   const deleteInventory = useDeleteInventory();
@@ -204,6 +204,10 @@ const Inventory = () => {
     Reason: item.reason,
     Date: getFormattedDate(item.adjustment_date),
   }));
+
+  if (isError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>

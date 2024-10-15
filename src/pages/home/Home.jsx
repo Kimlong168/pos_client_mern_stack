@@ -19,7 +19,7 @@ import { useReactToPrint } from "react-to-print";
 import ReceiptTemplate from "./components/ReceiptTemplate";
 function Home() {
   const { user } = useContext(AuthContext);
-  const { data, isLoading } = useProducts();
+  const { data, isLoading, isError } = useProducts();
   const { data: categories } = useCategories();
   const { state: products, dispatch } = useContext(ProductContext);
   const {
@@ -241,6 +241,10 @@ function Home() {
     content: () => receiptRef.current,
     documentTitle: "Receipt", // Optional: Set the title for the printed document
   });
+
+  if (isError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>

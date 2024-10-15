@@ -25,7 +25,7 @@ import SelectFilter from "@/components/form/SelectFilter";
 import { useUsers } from "@/hooks/user/useUser";
 
 const Attendance = () => {
-  const { data, isLoading } = useAttendances();
+  const { data, isLoading, isError } = useAttendances();
   const { data: users, isLoading: isUserLoading } = useUsers();
   const deleteAttendance = useDeleteAttendance();
 
@@ -187,6 +187,10 @@ const Attendance = () => {
       Location: att.qr_code?.location,
     };
   });
+
+  if (isError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>

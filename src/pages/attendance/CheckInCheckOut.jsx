@@ -90,7 +90,7 @@ const CheckInCheckOut = () => {
       console.warn("error");
       // notify("Error", "error");
     }
-  }, []);
+  }, [attendances]);
 
   // handle check in
   const handleCheckIn = async (event) => {

@@ -15,8 +15,16 @@ import RedStar from "../../components/ui/RedStar";
 const Mail = () => {
   const sendMail = useSendMail();
   const { user } = useContext(AuthContext);
-  const { data: users, isLoading: isUserLoading } = useUsers();
-  const { data: suppliers, isLoading: isSupplierLoading } = useSuppliers();
+  const {
+    data: users,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useUsers();
+  const {
+    data: suppliers,
+    isLoading: isSupplierLoading,
+    isError: isSupplierError,
+  } = useSuppliers();
   const [mailData, setMailData] = useState({
     name: "",
     email: "",
@@ -196,6 +204,11 @@ const Mail = () => {
       console.error("Error sending mail:", error);
     }
   };
+
+  if (isUserError || isSupplierError) {
+    return <div>Error...</div>;
+  }
+
   return (
     <div className="text-gray-900  border-gray-700 rounded shadow-xl p-4">
       {/* title */}

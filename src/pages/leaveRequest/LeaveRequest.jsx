@@ -22,7 +22,7 @@ import { notify } from "@/utils/toastify";
 import { useClearAllLeaveRequests } from "@/hooks/leaveRequest/useLeaveRequest";
 import { useNavigate } from "react-router-dom";
 const LeaveRequest = () => {
-  const { data, isLoading } = useLeaveRequests();
+  const { data, isLoading , isError} = useLeaveRequests();
   const { data: users, isLoading: isUserLoading } = useUsers();
   const clearAllLeaveRequests = useClearAllLeaveRequests();
   const {
@@ -180,6 +180,11 @@ const LeaveRequest = () => {
       "Request Date": getFormattedDate(item.created_at),
     };
   });
+
+  if(isError){
+    return <div>Error...</div>
+  }
+
 
   return (
     <div>

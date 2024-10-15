@@ -19,9 +19,17 @@ import { useCategories } from "../../hooks/category/useCategory";
 import { useSuppliers } from "../../hooks/supplier/useSupplier";
 
 const Product = () => {
-  const { data, isLoading } = useProducts();
-  const { data: categories, isLoading: isCategoryLoading } = useCategories();
-  const { data: suppliers, isLoading: isSupplierLoading } = useSuppliers();
+  const { data, isLoading, isError: isProductError } = useProducts();
+  const {
+    data: categories,
+    isLoading: isCategoryLoading,
+    isError: isCategoryError,
+  } = useCategories();
+  const {
+    data: suppliers,
+    isLoading: isSupplierLoading,
+    isError: isSupplierError,
+  } = useSuppliers();
   const deleteProduct = useDeleteProduct();
 
   const {
@@ -92,6 +100,10 @@ const Product = () => {
       }
     });
   };
+
+  if (isProductError || isCategoryError || isSupplierError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>
