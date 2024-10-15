@@ -66,11 +66,7 @@ const QrCode = () => {
   };
 
   if (isError) {
-    return (
-      <div className="w-full mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <p>QrCode not found</p>
-      </div>
-    );
+    return <div>Error...</div>;
   }
 
   return (

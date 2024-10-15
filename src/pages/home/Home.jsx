@@ -304,7 +304,7 @@ function Home() {
                     No products found
                   </div>
                 ) : (
-                  <div className="grid auto-rows-auto grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-7">
+                  <div className="grid auto-rows-auto grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mt-7">
                     {products?.map((product) => (
                       <React.Fragment key={product._id}>
                         <ProductCard product={product} />

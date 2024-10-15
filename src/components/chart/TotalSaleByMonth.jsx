@@ -1,4 +1,3 @@
-import { TrendingUp } from "lucide-react";
 
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
 
@@ -113,13 +112,13 @@ export default function TotalSaleByMonth({ data: saleData }) {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+        {/* <div className="flex gap-2 font-medium leading-none">
           Trending up by{" "}
           {(
             data[data.length - 1]?.amount - data[data.length - 2]?.amount
           ).toFixed(2)}
           $ this month <TrendingUp className="h-4 w-4" />
-        </div>
+        </div> */}
         <div className="leading-none text-muted-foreground">
           Showing total sales for the last {data?.length} months
         </div>

@@ -33,10 +33,16 @@ const AttendanceReport = () => {
     refetch();
   }, [date, refetch]);
 
-  const captureRef = useRef();
-  console.log("data sss", data);
-  const handleCapture = () => {
-    const element = captureRef.current; // Get the element to capture
+  const captureTableRef = useRef();
+  const captureChartRef = useRef();
+
+  const handleCapture = (type) => {
+    let element;
+    if (type === "table") {
+      element = captureTableRef.current; // Get the element to capture
+    } else {
+      element = captureChartRef.current; // Get the element to capture
+    }
 
     html2canvas(element).then((canvas) => {
       // Convert canvas to an image
@@ -45,7 +51,10 @@ const AttendanceReport = () => {
       // Create a link element to trigger download
       const link = document.createElement("a");
       link.href = imgData;
-      link.download = `attendance_report_${date}`;
+      link.download =
+        type === "table"
+          ? `Report_attendance - ${getFormattedDate(date)}`
+          : `Report_attendance_monthly - ${getFormattedDate(date)}`;
 
       document.body.appendChild(link);
       link.click();
@@ -88,14 +97,14 @@ const AttendanceReport = () => {
 
         <div>
           <button
-            onClick={handleCapture}
+            onClick={() => handleCapture("table")}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md p-2 flex gap-2 items-center"
           >
             Download <PiDownloadBold />
           </button>
         </div>
       </div>
-      <div ref={captureRef}>
+      <div ref={captureTableRef}>
         {date && (
           <div>
             <h3 className="text-xl">Date : {getFormattedDate(date)}</h3>
@@ -296,18 +305,27 @@ const AttendanceReport = () => {
       </div>
 
       {/* chart */}
-
-      <h3 className="text-2xl font-bold my-3">
-        Total Attendance by Employee for this month
-      </h3>
-      <div className="grid auto-rows-auto  lg:grid-cols-2 gap-5">
-        <TotalAbsentByEmployee data={data2} />
-        <TotalOnLeaveByEmployee data={data2} />
-        <TotalOnTimeByEmployee data={data2} />
-        <TotalNormalCheckOutByEmployee data={data2} />
-        <TotalMissedCheckOutByEmployee data={data2} />
-        <TotalLateByEmployee data={data2} />
-        <TotalEarlyCheckOutByEmployee data={data2} />
+      <div>
+        <div className="flex items-center justify-between">
+          <h3 className="text-2xl font-bold my-3">
+            Total Attendance by Employee for this month
+          </h3>
+          <button
+            onClick={() => handleCapture("chart")}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md p-2 flex gap-2 items-center"
+          >
+            Download <PiDownloadBold />
+          </button>
+        </div>
+        <div ref={captureChartRef} className="grid auto-rows-auto  lg:grid-cols-2 gap-5">
+          <TotalAbsentByEmployee data={data2} />
+          <TotalOnLeaveByEmployee data={data2} />
+          <TotalOnTimeByEmployee data={data2} />
+          <TotalNormalCheckOutByEmployee data={data2} />
+          <TotalMissedCheckOutByEmployee data={data2} />
+          <TotalLateByEmployee data={data2} />
+          <TotalEarlyCheckOutByEmployee data={data2} />
+        </div>
       </div>
     </div>
   );

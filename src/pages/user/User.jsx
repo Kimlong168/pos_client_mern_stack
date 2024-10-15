@@ -17,7 +17,7 @@ import { UserContext } from "../../contexts/UserContext";
 import SelectFilter from "../../components/form/SelectFilter";
 
 const User = () => {
-  const { data, isLoading } = useUsers();
+  const { data, isLoading, isError } = useUsers();
   const delelteUser = useDeleteUser();
 
   const {
@@ -74,6 +74,10 @@ const User = () => {
       }
     });
   };
+
+  if (isError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>

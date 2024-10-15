@@ -19,8 +19,16 @@ const Telegram = () => {
   const sendMessage = useTelegramSendMessage();
   const sendImage = useTelegramSendImage();
   const sendImageUrl = useTelegramSendImageUrl();
-  const { data: users, isLoading: isUserLoading } = useUsers();
-  const { data: suppliers, isLoading: isSupplierLoading } = useSuppliers();
+  const {
+    data: users,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useUsers();
+  const {
+    data: suppliers,
+    isLoading: isSupplierLoading,
+    isError: isSupplierError,
+  } = useSuppliers();
   const [telegramData, setTelegramData] = useState({
     name: "",
     chat_id: "",
@@ -171,6 +179,11 @@ const Telegram = () => {
       console.error("Error sending mail:", error);
     }
   };
+
+  if (isUserError || isSupplierError) {
+    return <div>Error...</div>;
+  }
+
   return (
     <div className="text-gray-900  border-gray-700 rounded shadow-xl p-4">
       {/* title */}

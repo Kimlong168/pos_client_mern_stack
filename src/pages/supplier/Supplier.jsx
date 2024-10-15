@@ -21,7 +21,7 @@ import ExportToExcel from "@/components/table/ExportToExcel";
 import ExportToPDF from "@/components/table/ExportToPDF";
 
 const Supplier = () => {
-  const { data, isLoading } = useSuppliers();
+  const { data, isLoading , isError} = useSuppliers();
   const deleteSupplier = useDeleteSupplier();
 
   const {
@@ -81,6 +81,10 @@ const Supplier = () => {
       ", " +
       supplier.contact_info?.address.country,
   }));
+
+  if (isError) {
+    return <div>Error...</div>;
+  }
 
   return (
     <div>
