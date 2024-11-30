@@ -21,7 +21,7 @@ import { MdOutlineArrowBackIos, MdOutlineCheckCircle } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 const WORK_START_TIME = new Date().setHours(9, 0, 0); // 9:00 AM
 const WORK_END_TIME = new Date().setHours(17, 0, 0); // 5:00 P
-const IPINFO_API_KEY = import.meta.env.VITE_APP_IPINFO_API_KEY;
+// const IPINFO_API_KEY = import.meta.env.VITE_APP_IPINFO_API_KEY;
 const CheckInCheckOut = () => {
   const { user } = useContext(AuthContext);
   const {
@@ -93,177 +93,344 @@ const CheckInCheckOut = () => {
     }
   }, [attendances]);
 
-  // handle checkin
+  // handle checkin using ipinfo api
+  // const handleCheckIn = async (event) => {
+  //   event.preventDefault();
+
+  //   // Default latitude and longitude
+  //   let latitude = 0;
+  //   let longitude = 0;
+
+  //   try {
+  //     // Fetch location based on IP using ipInfo API
+  //     const ipInfoUrl = `https://ipinfo.io/json?token=${IPINFO_API_KEY}`;
+  //     const response = await fetch(ipInfoUrl);
+  //     const data = await response.json();
+
+  //     // Parse the location details
+  //     const location = data.loc ? data.loc.split(",") : [];
+  //     latitude = parseFloat(location[0]);
+  //     longitude = parseFloat(location[1]);
+
+  //     // Check if latitude and longitude are valid
+  //     if (!latitude || !longitude) {
+  //       throw new Error("Could not fetch valid location");
+  //     }
+
+  //     console.log("latitude", latitude);
+  //     console.log("longitude", longitude);
+
+  //     const currentTime = new Date();
+  //     let checkInStatus = "";
+  //     let lateDuration = 0;
+
+  //     if (new Date(currentTime).getTime() <= WORK_START_TIME) {
+  //       checkInStatus = "On Time";
+  //     } else {
+  //       checkInStatus = "Late";
+  //       const timeDifference =
+  //         new Date(currentTime).getTime() - WORK_START_TIME;
+  //       const lateDurationInMn = Math.abs(timeDifference / 60000);
+
+  //       // Convert minutes to hours, minutes, and seconds
+  //       const hours = Math.floor(lateDurationInMn / 60);
+  //       const minutes = Math.floor(lateDurationInMn % 60);
+  //       const seconds = Math.floor((lateDurationInMn * 60) % 60);
+
+  //       // Format as h:mm:ss
+  //       lateDuration = `${hours}h ${minutes}m ${seconds}s`;
+  //       notify(`You are late for ${lateDuration}`, "info");
+  //     }
+
+  //     const isSuccess = await checkIn.mutateAsync({
+  //       qr_code: scannerResult,
+  //       employee: user._id,
+  //       time_in: currentTime,
+  //       check_in_status: checkInStatus,
+  //       latitude: latitude,
+  //       longitude: longitude,
+  //       checkInLateDuration: lateDuration,
+  //     });
+
+  //     if (isSuccess.status === "success") {
+  //       refetch();
+  //       notify("Check in successfully", "success");
+  //       setScannerResult(null);
+  //       navigate("/user/attendance");
+  //     } else {
+  //       notify(isSuccess.error.message, "info");
+  //       setScannerResult(null);
+  //     }
+  //   } catch (err) {
+  //     notify(`Error: ${err.message}`, "error");
+  //     setScannerResult(null);
+  //   }
+  // };
+  // handle check in
   const handleCheckIn = async (event) => {
     event.preventDefault();
 
-    // Default latitude and longitude
     let latitude = 0;
     let longitude = 0;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          const currentTime = new Date();
 
-    try {
-      // Fetch location based on IP using ipInfo API
-      const ipInfoUrl = `https://ipinfo.io/json?token=${IPINFO_API_KEY}`;
-      const response = await fetch(ipInfoUrl);
-      const data = await response.json();
+          let checkInStatus = "";
+          let lateDuration = 0;
 
-      // Parse the location details
-      const location = data.loc ? data.loc.split(",") : [];
-      latitude = parseFloat(location[0]);
-      longitude = parseFloat(location[1]);
+          if (new Date(currentTime).getTime() <= WORK_START_TIME) {
+            checkInStatus = "On Time";
+          } else {
+            checkInStatus = "Late";
+            const timeDifference =
+              new Date(currentTime).getTime() - WORK_START_TIME;
+            const lateDurationInMn = Math.abs(timeDifference / 60000);
 
-      // Check if latitude and longitude are valid
-      if (!latitude || !longitude) {
-        throw new Error("Could not fetch valid location");
-      }
+            // Convert minutes to hours, minutes, and seconds
+            const hours = Math.floor(lateDurationInMn / 60);
+            const minutes = Math.floor(lateDurationInMn % 60);
+            const seconds = Math.floor((lateDurationInMn * 60) % 60);
 
-      console.log("latitude", latitude);
-      console.log("longitude", longitude);
+            // Format as h:mm:ss
+            lateDuration = `${hours}h ${minutes}m ${seconds}s`;
+            notify(`You are late for ${lateDuration}`, "info");
+          }
 
-      const currentTime = new Date();
-      let checkInStatus = "";
-      let lateDuration = 0;
+          const isSuccess = await checkIn.mutateAsync({
+            qr_code: scannerResult,
+            employee: user._id,
+            time_in: currentTime,
+            check_in_status: checkInStatus,
+            latitude: latitude,
+            longitude: longitude,
+            checkInLateDuration: lateDuration,
+          });
 
-      if (new Date(currentTime).getTime() <= WORK_START_TIME) {
-        checkInStatus = "On Time";
-      } else {
-        checkInStatus = "Late";
-        const timeDifference =
-          new Date(currentTime).getTime() - WORK_START_TIME;
-        const lateDurationInMn = Math.abs(timeDifference / 60000);
+          if (isSuccess.status === "success") {
+            refetch();
+            notify("Check in successfully", "success");
+            setScannerResult(null);
 
-        // Convert minutes to hours, minutes, and seconds
-        const hours = Math.floor(lateDurationInMn / 60);
-        const minutes = Math.floor(lateDurationInMn % 60);
-        const seconds = Math.floor((lateDurationInMn * 60) % 60);
-
-        // Format as h:mm:ss
-        lateDuration = `${hours}h ${minutes}m ${seconds}s`;
-        notify(`You are late for ${lateDuration}`, "info");
-      }
-
-      const isSuccess = await checkIn.mutateAsync({
-        qr_code: scannerResult,
-        employee: user._id,
-        time_in: currentTime,
-        check_in_status: checkInStatus,
-        latitude: latitude,
-        longitude: longitude,
-        checkInLateDuration: lateDuration,
-      });
-
-      if (isSuccess.status === "success") {
-        refetch();
-        notify("Check in successfully", "success");
-        setScannerResult(null);
-        navigate("/user/attendance");
-      } else {
-        notify(isSuccess.error.message, "info");
-        setScannerResult(null);
-      }
-    } catch (err) {
-      notify(`Error: ${err.message}`, "error");
-      setScannerResult(null);
+            navigate("/user/attendance");
+          } else {
+            notify(isSuccess.error.message, "info");
+            setScannerResult(null);
+          }
+        },
+        (err) => {
+          notify(`ERROR(${err.code}): ${err.message}`, "error");
+          setScannerResult(null);
+        },
+        {
+          enableHighAccuracy: true, // Forces the use of GPS or a more accurate method
+          timeout: 30000, // Maximum time allowed to wait for a position (in milliseconds)
+          maximumAge: 0, // Don't accept a cached location
+        }
+      );
+    } else {
+      notify("Geolocation is not supported by this browser.", "error");
     }
   };
 
-  // handle check out
+  // handle check out using ipinfo api
+  // const handleCheckOut = async (event) => {
+  //   event.preventDefault();
+  //   setShowModal(false);
+
+  //   let latitude = 0;
+  //   let longitude = 0;
+
+  //   try {
+  //     // Fetch location based on IP using ipInfo API
+  //     const ipInfoUrl = `https://ipinfo.io/json?token=${IPINFO_API_KEY}`;
+  //     const response = await fetch(ipInfoUrl);
+  //     const data = await response.json();
+
+  //     // Parse the location details
+  //     const location = data.loc ? data.loc.split(",") : [];
+  //     latitude = parseFloat(location[0]);
+  //     longitude = parseFloat(location[1]);
+
+  //     // Check if latitude and longitude are valid
+  //     if (!latitude || !longitude) {
+  //       throw new Error("Could not fetch valid location");
+  //     }
+
+  //     const currentTime = new Date();
+  //     let checkOutStatus = "";
+  //     let earlyDuration = 0;
+
+  //     // Assuming WORK_END_TIME is defined and represents the end of the workday
+  //     if (new Date(currentTime).getTime() >= WORK_END_TIME) {
+  //       checkOutStatus = "Checked Out";
+  //     } else {
+  //       const timeDifference = new Date(currentTime).getTime() - WORK_END_TIME;
+  //       const earlyDurationInMn = Math.abs(timeDifference / 60000);
+
+  //       // Convert minutes to hours, minutes, and seconds
+  //       const hours = Math.floor(earlyDurationInMn / 60);
+  //       const minutes = Math.floor(earlyDurationInMn % 60);
+  //       const seconds = Math.floor((earlyDurationInMn * 60) % 60);
+
+  //       // Format as h:mm:ss
+  //       earlyDuration = `${hours}h ${minutes}m ${seconds}s`;
+
+  //       checkOutStatus = "Early Check-out";
+  //       notify(`You checked out early by ${earlyDuration}`, "info");
+  //     }
+
+  //     // isCheckIn.qr_code: is the whole qr_code object, we want _id only.
+  //     console.log("qr-code id", isCheckIn.qr_code?._id);
+
+  //     const isSuccess = await checkOut.mutateAsync({
+  //       qr_code: isCheckIn.qr_code?._id,
+  //       employee: user._id,
+  //       time_out: currentTime,
+  //       check_out_status: checkOutStatus,
+  //       latitude: latitude,
+  //       longitude: longitude,
+  //       checkOutEarlyDuration: earlyDuration,
+  //     });
+
+  //     if (isSuccess.status === "success") {
+  //       refetch();
+  //       notify("Check out successfully", "success");
+  //       setScannerResult(null);
+  //       // Save each record as an array but ensure the employee is not the same
+  //       if (attendances) {
+  //         const todayAttendances = attendances.filter((att) =>
+  //           isSameDate(att.time_in, new Date())
+  //         );
+
+  //         const updatedAttendances = todayAttendances.map((att) => {
+  //           if (att.employee === user._id) {
+  //             return { ...att, ...isSuccess.data };
+  //           }
+  //           return att;
+  //         });
+
+  //         localStorage.setItem(
+  //           "attendances",
+  //           JSON.stringify(updatedAttendances)
+  //         );
+  //       } else {
+  //         localStorage.setItem("attendances", JSON.stringify([isSuccess.data]));
+  //       }
+
+  //       navigate("/user/attendance");
+  //     }
+
+  //     if (isSuccess.status === "error") {
+  //       notify(isSuccess.error.message, "info");
+  //       setScannerResult(null);
+  //     }
+  //   } catch (err) {
+  //     notify(`Error: ${err.message}`, "error");
+  //     setScannerResult(null);
+  //   }
+  // };
+
   const handleCheckOut = async (event) => {
     event.preventDefault();
     setShowModal(false);
-
+  
     let latitude = 0;
     let longitude = 0;
-
-    try {
-      // Fetch location based on IP using ipInfo API
-      const ipInfoUrl = `https://ipinfo.io/json?token=${IPINFO_API_KEY}`;
-      const response = await fetch(ipInfoUrl);
-      const data = await response.json();
-
-      // Parse the location details
-      const location = data.loc ? data.loc.split(",") : [];
-      latitude = parseFloat(location[0]);
-      longitude = parseFloat(location[1]);
-
-      // Check if latitude and longitude are valid
-      if (!latitude || !longitude) {
-        throw new Error("Could not fetch valid location");
-      }
-
-      const currentTime = new Date();
-      let checkOutStatus = "";
-      let earlyDuration = 0;
-
-      // Assuming WORK_END_TIME is defined and represents the end of the workday
-      if (new Date(currentTime).getTime() >= WORK_END_TIME) {
-        checkOutStatus = "Checked Out";
-      } else {
-        const timeDifference = new Date(currentTime).getTime() - WORK_END_TIME;
-        const earlyDurationInMn = Math.abs(timeDifference / 60000);
-
-        // Convert minutes to hours, minutes, and seconds
-        const hours = Math.floor(earlyDurationInMn / 60);
-        const minutes = Math.floor(earlyDurationInMn % 60);
-        const seconds = Math.floor((earlyDurationInMn * 60) % 60);
-
-        // Format as h:mm:ss
-        earlyDuration = `${hours}h ${minutes}m ${seconds}s`;
-
-        checkOutStatus = "Early Check-out";
-        notify(`You checked out early by ${earlyDuration}`, "info");
-      }
-
-      // isCheckIn.qr_code: is the whole qr_code object, we want _id only.
-      console.log("qr-code id", isCheckIn.qr_code?._id);
-
-      const isSuccess = await checkOut.mutateAsync({
-        qr_code: isCheckIn.qr_code?._id,
-        employee: user._id,
-        time_out: currentTime,
-        check_out_status: checkOutStatus,
-        latitude: latitude,
-        longitude: longitude,
-        checkOutEarlyDuration: earlyDuration,
-      });
-
-      if (isSuccess.status === "success") {
-        refetch();
-        notify("Check out successfully", "success");
-        setScannerResult(null);
-        // Save each record as an array but ensure the employee is not the same
-        if (attendances) {
-          const todayAttendances = attendances.filter((att) =>
-            isSameDate(att.time_in, new Date())
-          );
-
-          const updatedAttendances = todayAttendances.map((att) => {
-            if (att.employee === user._id) {
-              return { ...att, ...isSuccess.data };
-            }
-            return att;
+  
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+  
+          const currentTime = new Date();
+          let checkOutStatus = "";
+          let earlyDuration = 0;
+  
+          // Assuming WORK_END_TIME is defined and represents the end of the workday
+          if (new Date(currentTime).getTime() >= WORK_END_TIME) {
+            checkOutStatus = "Checked Out";
+          } else {
+            const timeDifference = new Date(currentTime).getTime() - WORK_END_TIME;
+            const earlyDurationInMn = Math.abs(timeDifference / 60000);
+  
+            // Convert minutes to hours, minutes, and seconds
+            const hours = Math.floor(earlyDurationInMn / 60);
+            const minutes = Math.floor(earlyDurationInMn % 60);
+            const seconds = Math.floor((earlyDurationInMn * 60) % 60);
+  
+            // Format as h:mm:ss
+            earlyDuration = `${hours}h ${minutes}m ${seconds}s`;
+  
+            checkOutStatus = "Early Check-out";
+            notify(`You checked out early by ${earlyDuration}`, "info");
+          }
+  
+          // isCheckIn.qr_code: is the whole qr_code object, we want _id only.
+          console.log("qr-code id", isCheckIn.qr_code?._id);
+  
+          const isSuccess = await checkOut.mutateAsync({
+            qr_code: isCheckIn.qr_code?._id,
+            employee: user._id,
+            time_out: currentTime,
+            check_out_status: checkOutStatus,
+            latitude: latitude,
+            longitude: longitude,
+            checkOutEarlyDuration: earlyDuration,
           });
-
-          localStorage.setItem(
-            "attendances",
-            JSON.stringify(updatedAttendances)
-          );
-        } else {
-          localStorage.setItem("attendances", JSON.stringify([isSuccess.data]));
+  
+          if (isSuccess.status === "success") {
+            refetch();
+            notify("Check out successfully", "success");
+            setScannerResult(null);
+            // Save each record as an array but ensure the employee is not the same
+            if (attendances) {
+              const todayAttendances = attendances.filter((att) =>
+                isSameDate(att.time_in, new Date())
+              );
+  
+              const updatedAttendances = todayAttendances.map((att) => {
+                if (att.employee === user._id) {
+                  return { ...att, ...isSuccess.data };
+                }
+                return att;
+              });
+  
+              localStorage.setItem(
+                "attendances",
+                JSON.stringify(updatedAttendances)
+              );
+            } else {
+              localStorage.setItem("attendances", JSON.stringify([isSuccess.data]));
+            }
+  
+            navigate("/user/attendance");
+          }
+  
+          if (isSuccess.status === "error") {
+            notify(isSuccess.error.message, "info");
+            setScannerResult(null);
+          }
+        },
+        (err) => {
+          notify(`ERROR(${err.code}): ${err.message}`, "error");
+          setScannerResult(null);
+        },
+        {
+          enableHighAccuracy: true, // Forces the use of GPS or a more accurate method
+          timeout: 10000, // Maximum time allowed to wait for a position (in milliseconds)
+          maximumAge: 0, // Don't accept a cached location
         }
-
-        navigate("/user/attendance");
-      }
-
-      if (isSuccess.status === "error") {
-        notify(isSuccess.error.message, "info");
-        setScannerResult(null);
-      }
-    } catch (err) {
-      notify(`Error: ${err.message}`, "error");
-      setScannerResult(null);
+      );
+    } else {
+      notify("Geolocation is not supported by this browser.", "error");
     }
   };
+  
 
   const dataToExport = attendancesHistory?.map((att, index) => {
     return {

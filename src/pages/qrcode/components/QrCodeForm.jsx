@@ -11,7 +11,6 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
-const IPINFO_API_KEY = import.meta.env.VITE_APP_IPINFO_API_KEY;
 const LocationMarker = ({ setPosition, setData }) => {
   useMapEvents({
     click(e) {
@@ -75,58 +74,32 @@ const QrCodeForm = ({ onSubmitFn, isSubmitting, initialData = {} }) => {
     }
   };
 
-  // const getCurrentPosition = () => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         setPosition([position.coords.latitude, position.coords.longitude]);
-  //         setData((prevData) => ({
-  //           ...prevData,
-  //           lat: position.coords.latitude,
-  //           lng: position.coords.longitude,
-  //         }));
-  //       },
-  //       (err) => {
-  //         notify(`ERROR(${err.code}): ${err.message}`, "error");
-  //       },
-  //       {
-  //         enableHighAccuracy: true, // Forces the use of GPS or a more accurate method
-  //         timeout: 10000, // Maximum time allowed to wait for a position (in milliseconds)
-  //         maximumAge: 0, // Don't accept a cached location
-  //       }
-  //     );
-  //   } else {
-  //     notify("Geolocation is not supported by this browser.", "error");
-  //   }
-  // };
+  // get current location
+  const getCurrentPosition = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setPosition([position.coords.latitude, position.coords.longitude]);
+          setData((prevData) => ({
+            ...prevData,
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          }));
 
-  const getCurrentPosition = async () => {
-    try {
-      // Fetch location based on IP using ipInfo API
-      const ipInfoUrl = `https://ipinfo.io/json?token=${IPINFO_API_KEY}`;
-      const response = await fetch(ipInfoUrl);
-      const data = await response.json();
-
-      // Parse the location details
-      const location = data.loc ? data.loc.split(",") : [];
-      const latitude = parseFloat(location[0]);
-      const longitude = parseFloat(location[1]);
-
-      // Check if latitude and longitude are valid
-      if (!latitude || !longitude) {
-        throw new Error("Could not fetch valid location");
-      }
-
-      // Set the position state and update data
-      setPosition([latitude, longitude]);
-      setData((prevData) => ({
-        ...prevData,
-        lat: latitude,
-        lng: longitude,
-      }));
-    } catch (err) {
-      // Handle errors such as network issues or invalid response
-      notify(`ERROR: ${err.message}`, "error");
+          // Stop watching after successful check-out
+          // navigator.geolocation.clearWatch(watchId);
+        },
+        (err) => {
+          notify(`ERROR(${err.code}): ${err.message}`, "error");
+        },
+        {
+          enableHighAccuracy: true, // Forces the use of GPS or a more accurate method
+          timeout: 30000, // Maximum time allowed to wait for a position (in milliseconds)
+          maximumAge: 0, // Don't accept a cached location
+        }
+      );
+    } else {
+      notify("Geolocation is not supported by this browser.", "error");
     }
   };
 
@@ -209,12 +182,12 @@ const QrCodeForm = ({ onSubmitFn, isSubmitting, initialData = {} }) => {
         <div>
           <h3>
             Click on the map to get latitude and longitude or{" "}
-            <span
-              className="underline text-blue-400 cursor-pointer"
+            <button
+              className=" cursor-pointer bg-red-500 p-3 text-white rounded"
               onClick={getCurrentPosition}
             >
               get your current location
-            </span>
+            </button>
             :
           </h3>
           <form onSubmit={handleSearch}>
